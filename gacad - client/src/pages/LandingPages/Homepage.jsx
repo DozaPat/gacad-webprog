@@ -1,8 +1,8 @@
-import Button from '../components/Button';
-import heroImage from '../assets/styles/f1.jpg';
-import cardone from '../assets/styles/cardone.jpg';
-import cardtwo from '../assets/styles/cardtwo.jpg';
-import cardthree from '../assets/styles/cardthree.jpg';
+import Button from '../../components/Button';
+import heroImage from '../../assets/styles/f1.jpg';
+import cardone from '../../assets/styles/cardone.jpg';
+import cardtwo from '../../assets/styles/cardtwo.jpg';
+import cardthree from '../../assets/styles/cardthree.jpg';
 
 const HomePage = () => {
   return (

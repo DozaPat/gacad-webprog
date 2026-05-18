@@ -1,11 +1,11 @@
-import about1 from '../styles/about1.jpg';
-import logo from '../styles/agap_logo.png';
-import about5 from '../styles/about5.jpg';
-import securityDog from '../styles/securitydog.jpg';
-import peta from '../styles/petadachshund.jpg';
-import petb from '../styles/petajapanese.jpg';
-import petc from '../styles/dobrman.jpg';
-import leader from '../styles/leader.jpg';
+import about1 from '../assets/styles/about1.jpg';
+import logo from '../assets/styles/agap_logo.png';
+import about5 from '../assets/styles/about5.jpg';
+import securityDog from '../assets/styles/securitydog.jpg';
+import peta from '../assets/styles/petadachshund.jpg';
+import petb from '../assets/styles/petajapanese.jpg';
+import petc from '../assets/styles/dobrman.jpg';
+import leader from '../assets/styles/leader.jpg';
 const articles = [
   {
     name: "AGAP-company-overview",
