@@ -9,21 +9,21 @@ const AboutPage = () => {
   return (
     <div className="flex w-full flex-col gap-6">
       {/* Hero Section */}
-      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <section className="border-y border-zinc-200 bg-white px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-          <div className="rounded-3xl border-2 border-zinc-900 bg-white overflow-hidden flex items-center justify-center max-h-[500px]">
-  <img 
-    src={about1} 
-    alt="AGAP - Alex Gacad and Partners" 
-    className="w-full h-full object-cover object-top" 
-  />
-</div>
+          <div className="rounded-3xl border-2 border-[#002147] bg-white overflow-hidden flex items-center justify-center max-h-[500px] shadow-md shadow-blue-900/5">
+            <img 
+              src={about1} 
+              alt="AGAP - Alex Gacad and Partners" 
+              className="w-full h-full object-cover object-top" 
+            />
+          </div>
 
           <div>
-            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-[#FFD100] bg-[#002147] inline-block px-2.5 py-1 rounded">
               About Us
             </p>
-            <h1 className="max-w-xl text-3xl font-bold leading-tight text-zinc-900 sm:text-4xl">
+            <h1 className="max-w-xl text-3xl font-extrabold leading-tight text-[#002147] sm:text-4xl">
               AGAP - Alex Gacad and Partners
             </h1>
             <p className="mt-4 max-w-lg text-sm leading-7 text-zinc-600 sm:text-base">
@@ -40,36 +40,36 @@ const AboutPage = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <section className="border-y border-zinc-200 bg-[#002147]/5 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="mb-6">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
+          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#002147]">
             Profile Overview
           </p>
-          <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Quick summary blocks</h2>
+          <h2 className="mt-2 text-2xl font-bold text-[#002147]">Quick summary blocks</h2>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-            <p className="text-2xl font-bold text-zinc-900">05</p>
-            <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
+          <div className="rounded-3xl border-l-4 border-b-2 border-[#002147] bg-white p-5 shadow-sm">
+            <p className="text-3xl font-black text-[#002147]">05</p>
+            <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.24em] text-zinc-500">
               Years
             </p>
           </div>
-          <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-            <p className="text-2xl font-bold text-zinc-900">16</p>
-            <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
+          <div className="rounded-3xl border-l-4 border-b-2 border-[#FFD100] bg-white p-5 shadow-sm">
+            <p className="text-3xl font-black text-[#002147]">16</p>
+            <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.24em] text-zinc-500">
               Projects
             </p>
           </div>
-          <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-            <p className="text-2xl font-bold text-zinc-900">09</p>
-            <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
+          <div className="rounded-3xl border-l-4 border-b-2 border-[#002147] bg-white p-5 shadow-sm">
+            <p className="text-3xl font-black text-[#002147]">09</p>
+            <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.24em] text-zinc-500">
               Clients
             </p>
           </div>
-          <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-            <p className="text-2xl font-bold text-zinc-900">03</p>
-            <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
+          <div className="rounded-3xl border-l-4 border-b-2 border-[#FFD100] bg-white p-5 shadow-sm">
+            <p className="text-3xl font-black text-[#002147]">03</p>
+            <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.24em] text-zinc-500">
               Focus Areas
             </p>
           </div>
@@ -77,60 +77,59 @@ const AboutPage = () => {
       </section>
 
       {/* Section Flow & Visual Grid */}
-      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <section className="border-y border-zinc-200 bg-white px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#002147]">
               Section Flow
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Contact Us</h2>
+            <h2 className="mt-2 text-2xl font-bold text-[#002147]">Contact Us</h2>
             
             <div className="mt-6 space-y-4">
-              <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-                <h3 className="text-lg font-semibold text-zinc-900">Agap Company</h3>
-                <p className="mt-3 text-sm leading-6 text-zinc-600">
-                  Group of contactors, architects, engineers, and designers.
+              <article className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-md shadow-blue-900/5 hover:border-[#002147] transition-all duration-300">
+                <h3 className="text-lg font-bold text-[#002147]">Agap Company</h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-600">
+                  Group of contractors, architects, engineers, and designers.
                 </p>
               </article>
 
-              <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-                <h3 className="text-lg font-semibold text-zinc-900">Experience Block</h3>
-                <p className="mt-3 text-sm leading-6 text-zinc-600">
+              <article className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-md shadow-blue-900/5 hover:border-[#FFD100] transition-all duration-300">
+                <h3 className="text-lg font-bold text-[#002147]">Experience Block</h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-600">
                   Veteran in the field of construction
                 </p>
               </article>
 
-              <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-                <h3 className="text-lg font-semibold text-zinc-900">Contact Info</h3>
-                <p className="mt-3 text-sm leading-6 text-zinc-600">
+              <article className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-md shadow-blue-900/5 hover:border-[#002147] transition-all duration-300">
+                <h3 className="text-lg font-bold text-[#002147]">Contact Info</h3>
+                <p className="mt-2 text-sm leading-6 text-zinc-600 uppercase tracking-wider font-semibold text-zinc-500">
                   contact us
                 </p>
               </article>
             </div>
           </div>
 
-          <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
+          <div className="rounded-3xl border border-zinc-200 bg-white p-5 shadow-md shadow-blue-900/5">
+            <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#002147]">
               Visual Grid
             </p>
-            <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-  <div className="mt-5 grid gap-4 sm:grid-cols-2">
-    {/* Array of your imported about images */}
-    {[about2, about3, about4, about5].map((img, index) => (
-      <div 
-        key={index} 
-        className="flex aspect-square items-center justify-center rounded-[1.25rem] bg-white border-2 border-zinc-900 overflow-hidden"
-      >
-        <img 
-          src={img} 
-          alt={`Gallery item ${index + 1}`} 
-          className="w-full h-full object-cover" 
-        />
-      </div>
-    ))}
-  </div>
-</div>
-            <Button className="mt-5">View Section</Button>
+            <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-4 mt-3">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {[about2, about3, about4, about5].map((img, index) => (
+                  <div 
+                    key={index} 
+                    className="flex aspect-square items-center justify-center rounded-[1.25rem] bg-white border border-zinc-200 overflow-hidden shadow-sm"
+                  >
+                    <img 
+                      src={img} 
+                      alt={`Gallery item ${index + 1}`} 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <Button className="mt-5 w-full" variant="primary">View Section</Button>
           </div>
         </div>
       </section>

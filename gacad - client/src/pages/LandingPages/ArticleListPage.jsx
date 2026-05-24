@@ -4,39 +4,40 @@ import articles from '../../assets/article-content.js';
  
 const ArticleListPage = () => {
   return (
-<div className="flex w-full flex-col gap-6">
-<section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-<p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
+    <div className="flex w-full flex-col gap-6">
+      {/* Hero Header Section */}
+      <section className="border-y border-zinc-200 bg-white px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-[#FFD100] bg-[#002147] inline-block px-2.5 py-1 rounded">
           Articles
-</p>
+        </p>
  
-        <h1 className="max-w-xl text-3xl font-bold leading-tight text-zinc-900 sm:text-4xl">
+        <h1 className="max-w-xl text-3xl font-extrabold leading-tight text-[#002147] sm:text-4xl">
           Discover the AGAP company
-</h1>
+        </h1>
  
         <p className="mt-4 max-w-lg text-sm leading-7 text-zinc-600 sm:text-base">
           A family of companies dedicated to providing innovative solutions in the field of education, technology, and consulting. Explore our latest insights and stories.
-</p>
+        </p>
  
         <div className="mt-6">
-<Button to="/">Back Home</Button>
-</div>
-</section>
+          <Button to="/">Back Home</Button>
+        </div>
+      </section>
  
-      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-<div className="mb-6">
-<p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
+      {/* Article Grid Container Section */}
+      <section className="border-y border-zinc-200 bg-white px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="mb-6">
+          <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#002147]">
             Featured Articles
-</p>
+          </p>
  
-          <h2 className="mt-2 text-2xl font-semibold text-zinc-900">
+          <h2 className="mt-2 text-2xl font-bold text-[#002147]">
             Article card grid
-</h2>
-</div>
+          </h2>
+        </div>
  
         <ArticleList articles={articles} />
-</section>
- 
+      </section>
     </div>
   );
 };

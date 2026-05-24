@@ -19,6 +19,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 
+import HomeIcon from '@mui/icons-material/Home'; // Added Home Icon
+
 const drawerWidth = 240;
 const dashboardNavItems = [
   {
@@ -188,34 +190,50 @@ const DashLayout = () => {
               {open ? <MenuOpenIcon /> : <MenuIcon />}
             </IconButton>
 
-            {/* Embedded Logo Image (Looks into /public/logo.png) */}
+            {/* Brand Logo & Label made clickable back to Landing Page */}
             <Box 
-              component="img"
-              src={logo}
-              alt="AGAP"
+              component={Link} 
+              to="/" 
               sx={{ 
-                height: 36, 
-                width: 'auto',
-                backgroundColor: 'white',
-                p: 0.5,
-                borderRadius: '6px',
-                mr: 2,
-                boxShadow: 1
+                display: 'flex', 
+                alignItems: 'center', 
+                textDecoration: 'none',
+                color: 'inherit',
+                '&:hover opacity': 0.9 
               }}
-              onError={(e) => { e.target.style.display = 'none'; }} // Don't crash layout if image is missing
-            />
-            
-            <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 'bold', color: 'white' }}>
-              AGAP <span style={{ color: '#FFD100' }}>Company</span>
-              <span style={{ fontSize: '14px', fontWeight: 'normal', color: 'rgba(255,255,255,0.6)', marginLeft: '12px' }}>
+            >
+              {/* Embedded Logo Image */}
+              <Box 
+                component="img"
+                src={logo}
+                alt="AGAP"
+                sx={{ 
+                  height: 36, 
+                  width: 'auto',
+                  backgroundColor: 'white',
+                  p: 0.5,
+                  borderRadius: '6px',
+                  mr: 2,
+                  boxShadow: 1
+                }}
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+              
+              <Typography variant="h6" noWrap sx={{ fontWeight: 'bold', color: 'white' }}>
+                AGAP <span style={{ color: '#FFD100' }}>Company</span>
+              </Typography>
+            </Box>
+
+            <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 'normal' }}>
+              <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.6)', marginLeft: '12px' }}>
                 | &nbsp;{pageTitle}
               </span>
             </Typography>
           </Box>
 
           {/* Action Toolbar elements */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Search sx={{ mr: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Search>
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
@@ -224,6 +242,28 @@ const DashLayout = () => {
                 inputProps={{ 'aria-label': 'search' }}
               />
             </Search>
+
+            {/* Back to Homepage / Landing Button */}
+            <Button
+              component={Link}
+              to="/"
+              startIcon={<HomeIcon />}
+              sx={{
+                color: '#FFD100',
+                fontWeight: 'bold',
+                fontSize: '11px',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                border: '1px solid rgba(255, 209, 0, 0.4)',
+                px: 2,
+                '&:hover': {
+                  border: '1px solid #FFD100',
+                  backgroundColor: 'rgba(255, 209, 0, 0.1)'
+                }
+              }}
+            >
+              View Website
+            </Button>
             
             <Button 
               variant="outlined" 
@@ -266,7 +306,6 @@ const DashLayout = () => {
                   minHeight: 48,
                   px: 2.5,
                   justifyContent: open ? "initial" : "center",
-                  // Highlight background color if current active sidebar link
                   ...(location.pathname === to && {
                     backgroundColor: 'rgba(0, 33, 71, 0.08)',
                     borderLeft: '4px solid #002147',

@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
 
 const variantClasses = {
-    primary: 'bg-zinc-900 text-zinc-50 hover:bg-zinc-700',
-    secondary: 'bg-zinc-50 text-zinc-900 hover:bg-zinc-200',
+    // Primary: Deep Corporate Navy background with Gold text accent
+    primary: 'bg-[#002147] text-[#FFD100] hover:bg-[#001530] hover:text-white',
+    // Secondary: Gold background with Deep Navy text accent
+    secondary: 'bg-[#FFD100] text-[#002147] hover:bg-[#e6bd00]',
 };
 
 const Button = ({
@@ -13,7 +15,8 @@ const Button = ({
     className = '',
 }) => {
     const classes = [
-        'inline-flex items-center justify-center rounded-full border-2 border-zinc-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] transition',
+        // Retained your exact structure, mapping the border to your primary Deep Navy tone
+        'inline-flex items-center justify-center rounded-full border-2 border-[#002147] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.24em] transition',
         variantClasses[variant] ?? variantClasses.secondary,
         className,
     ]
