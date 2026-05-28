@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button.jsx';
+import { loginUser } from '../../services/UserService';   // ← Make sure this path is correct
 
 const inputClasses =
   'mt-2 w-full rounded-xl border border-[#002147]/20 bg-white px-4 py-3 text-sm text-[#002147] outline-none transition placeholder:text-zinc-400 focus:border-[#FFD100] focus:ring-2 focus:ring-[#FFD100]/20';
@@ -11,27 +12,31 @@ const SignInPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
+    setLoading(true);
 
-    // 1. Check for a user created on the Sign Up page
-    const storedUser = JSON.parse(localStorage.getItem('registeredUser'));
-    
-    // 2. Default credentials (for testing)
-    const defaultEmail = 'user@example.com';
-    const defaultPassword = 'Password123';
+    try {
+      const { data } = await loginUser({ email, password });
 
-    const isValidUser = (storedUser && email === storedUser.email && password === storedUser.password);
-    const isValidDefault = (email === defaultEmail && password === defaultPassword);
-
-    if (isValidUser || isValidDefault) {
+      // Save to localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('firstName', data.firstName);
+      localStorage.setItem('type', data.type);
       localStorage.setItem('isLoggedIn', 'true');
-      navigate('/');
-    } else {
-      setError('Invalid email or password. Please try again.');
+
+      alert('Login successful!'); // Optional
+      navigate('/'); // or wherever your dashboard is
+
+    } catch (err) {
+      console.error('Login failed:', err);
+      setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -77,9 +82,10 @@ const SignInPage = () => {
 
         <Button 
             type="submit" 
+            disabled={loading}
             className={`${actionButtonClassName} bg-[#002147] text-white hover:bg-[#FFD100] hover:text-[#002147] border-2 border-[#002147] transition-all`}
         >
-          Sign In
+          {loading ? 'Signing In...' : 'SIGN IN'}
         </Button>
       </form>
 

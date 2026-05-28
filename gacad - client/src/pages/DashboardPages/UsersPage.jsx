@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Alert,
   Box,
@@ -26,8 +26,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import { DataGrid } from '@mui/x-data-grid';
 
-// Dynamic static JSON data import
-import initialUsers from '../../data/users.json'; 
+// Import the API service methods
+import { fetchUsers, createUser, updateUser } from "../../services/UserService";
 
 const blankForm = {
   firstName: '',
@@ -36,7 +36,7 @@ const blankForm = {
   gender: 'male',
   contactNumber: '',
   email: '',
-  role: 'editor',
+  type: 'editor', // Changed key from 'role' to 'type' to match backend schema constraints
   username: '',
   password: '',
   address: '',
@@ -44,17 +44,47 @@ const blankForm = {
 };
 
 export default function UsersPage() {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]); // Default to empty array, data will load from DB
   const [open, setOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editUserId, setEditUserId] = useState(null);
   const [form, setForm] = useState(blankForm);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // --- Enhancement 2 States: Search & Filter Layouts ---
+  // Search & Filter Layout States
   const [searchQuery, setSearchQuery] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterGender, setFilterGender] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
+
+    // === ADD THIS ===
+  useEffect(() => {
+    loadUsers();
+  }, []);   // Empty array = run once when component mounts
+  // =================
+
+  // --- API Read: Fetch Users on Component Mount ---
+  const loadUsers = async () => {
+  setLoading(true);
+  setErrorMsg('');
+  try {
+    console.log("🔄 Fetching users from backend...");
+    const { data } = await fetchUsers();
+    
+    console.log("✅ Users fetched successfully:", data); // ← Debug log
+    
+    // Handle both possible response formats
+    setUsers(data.users || data || []);
+  } catch (error) {
+    console.error('❌ Error fetching users:', error.response?.data || error.message);
+    setErrorMsg('Failed to load users. Check if backend server is running.');
+    setUsers([]); // Clear on error
+  } finally {
+    setLoading(false);
+  }
+};
 
   // Handle Form Control Values Changes
   const handleChange = (e) => {
@@ -65,54 +95,105 @@ export default function UsersPage() {
     }));
   };
 
-  // --- Enhancement 3: Form Validations Logic ---
-  const handleSubmit = (e) => {
+  // Trigger Edit Mode Dialog Window Overlay
+  const handleEditOpen = (user) => {
+    setIsEditing(true);
+    setEditUserId(user._id || user.id); // Check MongoDB default ObjectId mapping standard
+    setForm({
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      age: user.age || '',
+      gender: user.gender || 'male',
+      contactNumber: user.contactNumber || '',
+      email: user.email || '',
+      type: user.type || 'editor',
+      username: user.username || '',
+      password: '', // Clear pass field interface for security during updates
+      address: user.address || '',
+      isActive: user.isActive ?? true,
+    });
+    setOpen(true);
+  };
+
+  // Close and clean form dialog lifecycle states
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setIsEditing(false);
+    setEditUserId(null);
+    setForm(blankForm);
+    setErrorMsg('');
+  };
+
+  // --- API Write: Form Submissions Logic (Create & Update) ---
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
 
     // 1. Required Field Checks
-    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.username.trim() || !form.password.trim()) {
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim() || !form.username.trim()) {
       setErrorMsg('Please fill out all required fields marked with an asterisk (*).');
       return;
     }
+    if (!isEditing && !form.password.trim()) {
+      setErrorMsg('Password field requirement is mandatory for target new registrations.');
+      return;
+    }
 
-    // 2. Age must be a number only
-    if (isNaN(form.age) || form.age.trim() === '' || Number(form.age) <= 0) {
+    // 2. Age structural checks
+    if (isNaN(form.age) || form.age.toString().trim() === '' || Number(form.age) <= 0) {
       setErrorMsg('Age must be a valid number greater than zero.');
       return;
     }
 
-    // 3. Contact number must be exactly 11 digits
+    // 3. Contact number validation rules (11 digits check)
     const digitsOnly = form.contactNumber.replace(/\D/g, '');
     if (form.contactNumber.trim() !== '' && (digitsOnly.length !== 11 || form.contactNumber.length !== 11)) {
       setErrorMsg('Contact number must be exactly 11 numeric digits (e.g., 09171234567).');
       return;
     }
 
-    // 4. Username must not contain spaces
+    // 4. Username validation checking criteria space
     if (/\s/.test(form.username)) {
       setErrorMsg('Username cannot contain spaces.');
       return;
     }
 
-    // 5. Password must be at least 8 characters
-    if (form.password.length < 8) {
+    // 5. Password length criteria validations block constraints
+    if (!isEditing && form.password.length < 8) {
       setErrorMsg('Password must be at least 8 characters long.');
       return;
     }
 
-    // Save validated record item entry
-    const newUser = {
-      ...form,
-      id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
-    };
-
-    setUsers((prev) => [...prev, newUser]);
-    setOpen(false);
-    setForm(blankForm);
+    try {
+      if (isEditing) {
+        // Build payload configuration container
+        const updatePayload = { ...form };
+        if (!updatePayload.password) delete updatePayload.password; // Omit password property block if empty string
+        
+        await updateUser(editUserId, updatePayload);
+      } else {
+        await createUser(form);
+      }
+      
+      await loadUsers(); // Refresh updated collection arrays straight from MongoDB
+      handleCloseDialog();
+    } catch (err) {
+      console.error('Error saving user data:', err);
+      setErrorMsg(err.response?.data?.message || 'An error occurred while targeting the database server interface transaction.');
+    }
   };
 
-  // Clear Filter Action Reset Bar
+  // --- API Write: Inline Switch Toggle Status Bar Handler ---
+  const handleToggleActive = async (id, currentStatus) => {
+    try {
+      await updateUser(id, { isActive: !currentStatus });
+      await loadUsers(); // Direct remote rendering validation refresh sync
+    } catch (error) {
+      console.error('Error toggling dynamic interface user metrics profiles:', error);
+    }
+  };
+
+  // Reset Control Filtering Fields
   const handleResetFilters = () => {
     setSearchQuery('');
     setFilterRole('all');
@@ -120,16 +201,8 @@ export default function UsersPage() {
     setFilterStatus('all');
   };
 
-  // Inline Switch Toggle User Status Action Handler
-  const toggleUserStatus = (id) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, isActive: !u.isActive } : u))
-    );
-  };
-
-  // --- Enhancement 2: Dynamic Search & Dropdown Filter Evaluation ---
+  // --- Dynamic Search & Dropdown filter array configuration compilation ---
   const filteredUsers = users.filter((user) => {
-    // A. Full-text matches over First Name, Last Name, Email, or Username
     const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
     const matchesSearch = 
       (user.firstName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -138,8 +211,7 @@ export default function UsersPage() {
       (user.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (user.username || '').toLowerCase().includes(searchQuery.toLowerCase());
 
-    // B. Category Dropdown matches
-    const matchesRole = filterRole === 'all' || user.role === filterRole;
+    const matchesRole = filterRole === 'all' || user.type === filterRole; // Mapped targeting user.type
     const matchesGender = filterGender === 'all' || user.gender === filterGender;
     
     let matchesStatus = true;
@@ -149,9 +221,14 @@ export default function UsersPage() {
     return matchesSearch && matchesRole && matchesGender && matchesStatus;
   });
 
-  // Table Column Schemes Mapping
+  // Table Column Schemes Mapping Configurations
   const columns = [
-    { field: 'id', headerName: 'ID', width: 65 },
+    { 
+      field: '_id', 
+      headerName: 'ID', 
+      width: 110,
+      valueGetter: (params) => params.row?._id || params.row?.id 
+    },
     {
       field: 'fullName',
       headerName: 'Full Name',
@@ -165,12 +242,12 @@ export default function UsersPage() {
     { field: 'username', headerName: 'Username', width: 120 },
     { field: 'email', headerName: 'Email Address', width: 210 },
     { 
-      field: 'role', 
+      field: 'type', 
       headerName: 'Role', 
       width: 100, 
       renderCell: (params) => (
         <Chip 
-          label={(params.value || '').toUpperCase()} 
+          label={(params.value || 'editor').toUpperCase()} 
           size="small" 
           variant="outlined"
           color={params.value === 'admin' ? 'secondary' : 'default'}
@@ -192,25 +269,35 @@ export default function UsersPage() {
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 130,
+      width: 180,
       sortable: false,
-      renderCell: (params) => (
-        <Button
-          variant="contained"
-          size="small"
-          disableElevation
-          color={params.row?.isActive ? 'warning' : 'success'}
-          onClick={() => toggleUserStatus(params.row?.id)}
-        >
-          {params.row?.isActive ? 'Disable' : 'Activate'}
-        </Button>
-      ),
+      renderCell: (params) => {
+        const rowId = params.row?._id || params.row?.id;
+        const currentActiveStatus = params.row?.isActive;
+        return (
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ height: '100%' }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => handleEditOpen(params.row)}
+            >
+              Edit
+            </Button>
+            <Switch
+              size="small"
+              checked={!!currentActiveStatus}
+              onChange={() => handleToggleActive(rowId, currentActiveStatus)}
+              color="primary"
+            />
+          </Stack>
+        );
+      },
     },
   ];
 
   return (
     <Box sx={{ p: 3, width: '100%' }}>
-      {/* Upper Context Structural Header Block */}
+      {/* Structural Header Section */}
       <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={2} sx={{ mb: 3 }}>
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#002147' }}>
@@ -230,10 +317,9 @@ export default function UsersPage() {
         </Button>
       </Stack>
 
-      {/* --- Enhancement 2 Layout Shell: Filter & Global Search Control Panel --- */}
+      {/* Filter and Search Layout Control Dashboard */}
       <Paper variant="outlined" sx={{ p: 2, mb: 3, borderRadius: '8px', bgcolor: '#f8fafc' }}>
         <Grid container spacing={2} alignItems="center">
-          {/* Text Query Filter Search Component Node */}
           <Grid item xs={12} md={4}>
             <TextField
               fullWidth
@@ -258,7 +344,6 @@ export default function UsersPage() {
             />
           </Grid>
           
-          {/* Dropdown System Role Controller Element */}
           <Grid item xs={12} sm={4} md={2}>
             <TextField fullWidth select size="small" label="Role" value={filterRole} onChange={(e) => setFilterRole(e.target.value)}>
               <MenuItem value="all">All Roles</MenuItem>
@@ -268,7 +353,6 @@ export default function UsersPage() {
             </TextField>
           </Grid>
 
-          {/* Dropdown Gender Option Filter Node */}
           <Grid item xs={12} sm={4} md={2}>
             <TextField fullWidth select size="small" label="Gender" value={filterGender} onChange={(e) => setFilterGender(e.target.value)}>
               <MenuItem value="all">All Genders</MenuItem>
@@ -278,7 +362,6 @@ export default function UsersPage() {
             </TextField>
           </Grid>
 
-          {/* Dropdown Status Activity Monitor Element */}
           <Grid item xs={12} sm={4} md={2}>
             <TextField fullWidth select size="small" label="Status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
               <MenuItem value="all">All Statuses</MenuItem>
@@ -287,7 +370,6 @@ export default function UsersPage() {
             </TextField>
           </Grid>
 
-          {/* Clear Controls Quick Action Node Button */}
           <Grid item xs={12} md={2}>
             <Button 
               fullWidth 
@@ -303,11 +385,13 @@ export default function UsersPage() {
         </Grid>
       </Paper>
 
-      {/* Main Table Tracking Grid Container Shell */}
+      {/* Main Table Structural Grid Framework Display Container */}
       <Paper variant="outlined" sx={{ height: 420, width: '100%', borderRadius: '8px', overflow: 'hidden' }}>
         <DataGrid
-          rows={filteredUsers} // Leverages computed filtered array dynamically
+          rows={filteredUsers}
           columns={columns}
+          loading={loading}
+          getRowId={(row) => row._id || row.id} // Ensures track identity mapping compatibility with Mongo DB formats
           initialState={{
             pagination: {
               paginationModel: { pageSize: 5 },
@@ -318,12 +402,13 @@ export default function UsersPage() {
         />
       </Paper>
 
-      {/* Creation Modal Form Sheet Context Box */}
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ fontWeight: 'bold', pb: 1, color: '#002147' }}>Create New User Account</DialogTitle>
+      {/* Creation and Update Popup Form Modal Sheet */}
+      <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="sm">
+        <DialogTitle sx={{ fontWeight: 'bold', pb: 1, color: '#002147' }}>
+          {isEditing ? 'Edit User Account Profile' : 'Create New User Account'}
+        </DialogTitle>
         <DialogContent dividers>
           <Box component="form" noValidate onSubmit={handleSubmit}>
-            {/* Enhancement 3: Error Message Alert System */}
             {errorMsg && (
               <Alert severity="error" sx={{ mb: 3, fontWeight: 'medium' }}>
                 {errorMsg}
@@ -349,7 +434,7 @@ export default function UsersPage() {
               <TextField fullWidth size="small" type="email" label="Email Address" name="email" value={form.email} onChange={handleChange} required />
 
               <Stack direction="row" spacing={2}>
-                <TextField fullWidth size="small" select label="System Role" name="role" value={form.role} onChange={handleChange}>
+                <TextField fullWidth size="small" select label="System Role" name="type" value={form.type} onChange={handleChange}>
                   <MenuItem value="admin">Admin</MenuItem>
                   <MenuItem value="editor">Editor</MenuItem>
                   <MenuItem value="viewer">Viewer</MenuItem>
@@ -361,11 +446,11 @@ export default function UsersPage() {
                 fullWidth
                 size="small"
                 type={showPassword ? 'text' : 'password'}
-                label="Password"
+                label={isEditing ? "Password (Leave blank to keep unchanged)" : "Password"}
                 name="password"
                 value={form.password}
                 onChange={handleChange}
-                required
+                required={!isEditing}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -387,9 +472,9 @@ export default function UsersPage() {
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setOpen(false)} color="inherit">Cancel</Button>
+          <Button onClick={handleCloseDialog} color="inherit">Cancel</Button>
           <Button variant="contained" onClick={handleSubmit} sx={{ bgcolor: '#002147', '&:hover': { bgcolor: '#001530' } }}>
-            Save Account
+            {isEditing ? 'Save Changes' : 'Save Account'}
           </Button>
         </DialogActions>
       </Dialog>
