@@ -6,50 +6,46 @@ dns.setServers(['1.1.1.1', '8.8.8.8', '8.8.4.4']);
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
-
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
+const articleRoutes = require('./routes/articleRoutes');
 
 const app = express();
 
-// Database Connection
-connectDB();
-
-// Middleware
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// CORS
+// ====================== MIDDLEWARE ======================
 app.use(cors({
-    origin: "*",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    next();
-});
+app.use(express.json());
 
-// === IMPORTANT: Register Routes ===
-app.use("/api/users", userRoutes);
-// app.use("/api/articles", articleRoutes);  // Uncomment when needed
+// ====================== DATABASE CONNECTION (MUST WAIT) ======================
+const startServer = async () => {
+  try {
+    await connectDB();
+    console.log("✅ MongoDB Connected Successfully!");
 
-// 404 Handler
-app.use((req, res) => {
-    res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });
-});
+    // ====================== ROUTES (only after DB is connected) ======================
+    app.use('/api/users', userRoutes);
+    app.use('/api/articles', articleRoutes);
 
-// Error Handling
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: "Server Error" });
-});
+    // 404 Handler
+    app.use((req, res) => {
+      res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });
+    });
 
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-});
+    const PORT = process.env.PORT || 8000;
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+
+  } catch (error) {
+    console.error("❌ MongoDB Connection Failed:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();

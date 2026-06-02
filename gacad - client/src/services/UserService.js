@@ -2,23 +2,23 @@ import axios from 'axios';
 import constants from '../constants';
 
 const API = axios.create({
-    baseURL: `${constants.HOST}/api/users`,   // ← This should be the only /api
-    headers: {
-        'Content-Type': 'application/json'
-    }
+  baseURL: `${constants.HOST}/api/users`,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
 
-// Fetch users
+// Automatically attach JWT token to every request
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export const fetchUsers = () => API.get('/');
-
-// Create user
 export const createUser = (user) => API.post('/', user);
-
-// Update user
 export const updateUser = (id, user) => API.put(`/${id}`, user);
-
-// Delete user
 export const deleteUser = (id) => API.delete(`/${id}`);
-
-// Login user
 export const loginUser = (credentials) => API.post('/login', credentials);

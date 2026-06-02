@@ -15,30 +15,37 @@ const SignInPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError('');
-    setLoading(true);
+ const handleSubmit = async (event) => {
+  event.preventDefault();
+  setError('');
+  setLoading(true);
 
-    try {
-      const { data } = await loginUser({ email, password });
+  try {
+    const { data } = await loginUser({ email, password });
 
-      // Save to localStorage
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('firstName', data.firstName);
-      localStorage.setItem('type', data.type);
-      localStorage.setItem('isLoggedIn', 'true');
-
-      alert('Login successful!'); // Optional
-      navigate('/'); // or wherever your dashboard is
-
-    } catch (err) {
-      console.error('Login failed:', err);
-      setError(err.response?.data?.message || 'Invalid email or password. Please try again.');
-    } finally {
+    // === REQUIREMENT 1: BLOCK VIEWERS ===
+    if (data.type === 'viewer') {
+      setError('Viewers are not allowed to log in to the dashboard.');
       setLoading(false);
+      return;
     }
-  };
+
+    // Save to localStorage
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('firstName', data.firstName);
+    localStorage.setItem('type', data.type);
+    localStorage.setItem('isLoggedIn', 'true');
+
+    alert('Login successful!');
+    navigate('/dashboard');   // ← go directly to dashboard
+
+  } catch (err) {
+    console.error('Login failed:', err);
+    setError(err.response?.data?.message || 'Invalid email or password.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="w-full max-w-md">

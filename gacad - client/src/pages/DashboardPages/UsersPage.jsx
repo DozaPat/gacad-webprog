@@ -27,7 +27,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { DataGrid } from '@mui/x-data-grid';
 
 // Import the API service methods
-import { fetchUsers, createUser, updateUser } from "../../services/UserService";
+import { fetchUsers, createUser, updateUser, deleteUser } from "../../services/UserService";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const blankForm = {
   firstName: '',
@@ -192,6 +193,20 @@ export default function UsersPage() {
       console.error('Error toggling dynamic interface user metrics profiles:', error);
     }
   };
+  const handleDelete = async (id) => {
+  if (!window.confirm('Are you sure you want to permanently delete this user? This action cannot be undone.')) return;
+
+  try {
+    console.log("🗑️ Attempting to delete user ID:", id);
+    await deleteUser(id);
+    console.log("✅ User deleted successfully");
+    await loadUsers();        // refresh table
+  } catch (error) {
+    console.error('❌ Delete error details:', error.response?.data || error.message);
+    const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
+    alert(`Delete failed: ${errorMsg}`);
+  }
+};
 
   // Reset Control Filtering Fields
   const handleResetFilters = () => {
@@ -267,32 +282,40 @@ export default function UsersPage() {
       ),
     },
     {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 180,
-      sortable: false,
-      renderCell: (params) => {
-        const rowId = params.row?._id || params.row?.id;
-        const currentActiveStatus = params.row?.isActive;
-        return (
-          <Stack direction="row" spacing={1} alignItems="center" sx={{ height: '100%' }}>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => handleEditOpen(params.row)}
-            >
-              Edit
-            </Button>
-            <Switch
-              size="small"
-              checked={!!currentActiveStatus}
-              onChange={() => handleToggleActive(rowId, currentActiveStatus)}
-              color="primary"
-            />
-          </Stack>
-        );
-      },
-    },
+  field: 'actions',
+  headerName: 'Actions',
+  width: 220,
+  sortable: false,
+  renderCell: (params) => {
+    const rowId = params.row?._id || params.row?.id;
+    const currentActiveStatus = params.row?.isActive;
+    return (
+      <Stack direction="row" spacing={1} alignItems="center" sx={{ height: '100%' }}>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => handleEditOpen(params.row)}
+        >
+          Edit
+        </Button>
+        <Switch
+          size="small"
+          checked={!!currentActiveStatus}
+          onChange={() => handleToggleActive(rowId, currentActiveStatus)}
+          color="primary"
+        />
+        {/* NEW DELETE BUTTON */}
+        <IconButton
+          color="error"
+          size="small"
+          onClick={() => handleDelete(rowId)}
+        >
+          <DeleteIcon />
+        </IconButton>
+      </Stack>
+    );
+  },
+},
   ];
 
   return (
