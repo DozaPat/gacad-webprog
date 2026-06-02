@@ -14,7 +14,12 @@ const app = express();
 
 // ====================== MIDDLEWARE ======================
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'https://gacad-backend.onrender.com',           // your Render backend (for testing)
+    'https://your-vercel-frontend.vercel.app'       // ← We will replace this later
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
