@@ -18,7 +18,7 @@ app.use(cors({
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     'https://gacad-backend.onrender.com',           // your Render backend (for testing)
-    'https://gacad-webprog.vercel.app',       // ← We will replace this later
+    'https://gacad-webprog-gu84wfyj9-doza-s-projects.vercel.app',      // ← We will replace this later
     
 
   ],
